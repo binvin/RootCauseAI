@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # RootCause AI — Evidence-first incident investigation agent
 
 Streamlit prototype for investigating uploaded technical logs using bounded read-only tools. Supports deterministic offline baseline and optional NVIDIA Nemotron agent via Nebius Token Factory.
@@ -42,3 +43,7 @@ Logs are untrusted input. Never upload production logs containing secrets, perso
 ## Hackathon status
 
 The Nebius x NVIDIA hackathon requires a working application making real Nebius Token Factory inference calls or deployed on Nebius AI Cloud, using an NVIDIA open-source model, plus a public demo and public open-source repo. This starter is **not submission-ready** until live Nemotron agent behavior and hosting are demonstrated.
+=======
+# RootCauseAI
+Evidence-driven AI agent for technical incident investigation
+>>>>>>> a1b880545e1ae60698e53458753cae4433e651e1

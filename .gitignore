@@ -3,4 +3,8 @@ __pycache__/
 .pytest_cache/
 .env
 .streamlit/secrets.toml
+<<<<<<< HEAD
 *.pyc
+=======
+*.pyc
+>>>>>>> a1b880545e1ae60698e53458753cae4433e651e1
