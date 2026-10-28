@@ -1,0 +1,6 @@
+2026-10-27 10:00:01 INFO Starting deployment job build-192
+2026-10-27 10:00:03 INFO Connecting to https://artifact.internal.example
+2026-10-27 10:00:04 ERROR javax.net.ssl.SSLHandshakeException: PKIX path building failed
+2026-10-27 10:00:04 ERROR unable to find valid certification path to requested target
+2026-10-27 10:00:05 WARN Download artifact failed after 1 attempt
+2026-10-27 10:00:06 ERROR Deployment job terminated
