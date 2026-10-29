@@ -25,6 +25,15 @@ If one tool provides sufficient evidence, a short investigation is valid.
 Distinguish observed failures from inferred root causes.
 An INFO event may still describe a failed operation.
 If the evidence is insufficient, explicitly state what remains unknown.
+
+Evidence and confidence rules:
+- Do not infer that application code is defect-free merely because no exception appears in the logs.
+- Distinguish an observed failure from a proposed underlying root cause.
+- Do not assign numerical confidence percentages unless supported by a validated scoring method.
+- Use qualitative confidence: High, Moderate, or Low, and explain what that rating covers.
+- If the failure sequence is supported but its initiating cause is unknown, state that clearly.
+- Do not describe diagnostic checks as completed unless the corresponding tools were actually invoked.
+- validate_evidence checks that citations refer to existing lines; it does not prove causal hypotheses.
 """
 
 FUNCTION_TOOLS = [
@@ -74,7 +83,7 @@ def neb_investigate(log: str, max_cycles: int=5):
     messages=[{"role":"system","content":SYSTEM},{"role":"user","content":"Analyze these untrusted numbered incident logs. Investigate with read-only tools and cite only real line numbers.\n" + "\n".join(f"L{x['line']}: {x['text']}" for x in number_lines(log))}]
     trace=[]
     for cycle in range(max_cycles):
-        response=client.chat.completions.create(model=model,messages=messages,tools=FUNCTION_TOOLS,tool_choice="auto",temperature=0,max_tokens=1400)
+        response=client.chat.completions.create(model=model,messages=messages,tools=FUNCTION_TOOLS,tool_choice="required" if cycle == 0 else "auto",temperature=0,max_tokens=1400)
         msg=response.choices[0].message
         messages.append(msg.model_dump(exclude_none=True))
         if not msg.tool_calls:
