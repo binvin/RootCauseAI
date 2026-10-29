@@ -11,6 +11,20 @@ After examining sufficient evidence, produce a concise structured Markdown repor
 Summary, Hypotheses, Supporting Evidence (line numbers), Contradictory/Missing Evidence,
 Safe Read-only Diagnostic Checks, Suggested Remediation (requires human approval), Confidence and Limitations.
 Never invent facts outside the log. Avoid exposing passwords, tokens or personal information.
+Investigation procedure:
+1. Examine the supplied log entries and identify suspicious or failed operations.
+2. Use search_logs to gather evidence about relevant failures.
+3. Use extract_timeline when event ordering or correlation matters.
+4. Use detect_patterns when known signatures may help.
+5. Use validate_evidence to verify cited line numbers before
+   producing the final report.
+
+Do not call unnecessary tools merely to increase tool count.
+If one tool provides sufficient evidence, a short investigation is valid.
+
+Distinguish observed failures from inferred root causes.
+An INFO event may still describe a failed operation.
+If the evidence is insufficient, explicitly state what remains unknown.
 """
 
 FUNCTION_TOOLS = [
@@ -19,6 +33,7 @@ FUNCTION_TOOLS = [
     {"type": "function", "function": {"name":"extract_timeline", "description":"Extract timestamped log events in source order", "parameters":{"type":"object","properties":{}}}},
     {"type": "function", "function": {"name":"validate_evidence", "description":"Check that proposed cited line numbers exist", "parameters":{"type":"object","properties":{"lines":{"type":"array","items":{"type":"integer"}}},"required":["lines"]}}},
 ]
+log = redact_secrets(log)
 
 def redact_secrets(log: str) -> str:
     import re
@@ -63,17 +78,55 @@ def neb_investigate(log: str, max_cycles: int=5):
         msg=response.choices[0].message
         messages.append(msg.model_dump(exclude_none=True))
         if not msg.tool_calls:
+                report = msg.content or "Model returned no report."
+                trace.append({
+                    "cycle": cycle + 1,
+                    "tool": "agent_complete",
+                    "arguments": {},
+                    "result": {
+                        "reason": "Model chose to generate a final response",
+                        "finish_reason": response.choices[0].finish_reason
+                    }
+                    })
+                return report, trace
+    
             report=msg.content or "Model returned no report."
             return report,trace
-        for call in msg.tool_calls[:4]:
+
+        for call in msg.tool_calls:
+            name = call.function.name
+            args = {}  # Initialize for each tool call
             try:
-                args=json.loads(call.function.arguments or "{}")
-                if not isinstance(args,dict): args={}
-            except json.JSONDecodeError:
-                args={}
-            result=run_tool(call.function.name,log,args)
-            trace.append({"cycle":cycle+1,"tool":call.function.name,"arguments":args,"result":result})
-            messages.append({"role":"tool","tool_call_id":call.id,"content":json.dumps(result)[:12000]})
+                args = json.loads(call.function.arguments or "{}")
+                if not isinstance(args, dict):
+                    raise ValueError("Tool arguments must be an object")
+        
+                if name not in {
+                    "search_logs",
+                    "detect_patterns",
+                    "extract_timeline",
+                    "validate_evidence",
+                }:
+                    raise ValueError(f"Unknown tool: {name}")
+        
+                result = run_tool(name, log, args)
+        
+            except (ValueError, TypeError, KeyError) as exc:
+                result = {"error": str(exc)}
+        
+            trace.append({
+                "cycle": cycle + 1,
+                "tool": name,
+                "arguments": args,
+                "result": result,
+            })
+        
+            messages.append({
+                "role": "tool",
+                "tool_call_id": call.id,
+                "content": json.dumps(result)[:12000],
+            })
+        
     # Final report after bounded loop, without further tool calling.
     final=client.chat.completions.create(model=model,messages=messages+[{'role':'user','content':'Tool budget exhausted. Summarize what is supported by the verified log lines and what remains uncertain.'}],temperature=0,max_tokens=1300)
     return final.choices[0].message.content or "No final report returned.",trace
