@@ -33,7 +33,6 @@ FUNCTION_TOOLS = [
     {"type": "function", "function": {"name":"extract_timeline", "description":"Extract timestamped log events in source order", "parameters":{"type":"object","properties":{}}}},
     {"type": "function", "function": {"name":"validate_evidence", "description":"Check that proposed cited line numbers exist", "parameters":{"type":"object","properties":{"lines":{"type":"array","items":{"type":"integer"}}},"required":["lines"]}}},
 ]
-log = redact_secrets(log)
 
 def redact_secrets(log: str) -> str:
     import re
@@ -64,6 +63,7 @@ def mock_investigate(log: str):
 
 def neb_investigate(log: str, max_cycles: int=5):
     """Model-driven read-only tool loop using Nebius' OpenAI-compatible endpoint."""
+    log = redact_secrets(log)
     from openai import OpenAI
     api_key=os.getenv("NEBIUS_API_KEY")
     if not api_key:
@@ -78,20 +78,17 @@ def neb_investigate(log: str, max_cycles: int=5):
         msg=response.choices[0].message
         messages.append(msg.model_dump(exclude_none=True))
         if not msg.tool_calls:
-                report = msg.content or "Model returned no report."
-                trace.append({
-                    "cycle": cycle + 1,
-                    "tool": "agent_complete",
-                    "arguments": {},
-                    "result": {
-                        "reason": "Model chose to generate a final response",
-                        "finish_reason": response.choices[0].finish_reason
-                    }
-                    })
-                return report, trace
-    
-            report=msg.content or "Model returned no report."
-            return report,trace
+            report = msg.content or "Model returned no report."
+            trace.append({
+                "cycle": cycle + 1,
+                "tool": "agent_complete",
+                "arguments": {},
+                "result": {
+                    "reason": "Model chose to generate a final response",
+                    "finish_reason": response.choices[0].finish_reason,
+                },
+            })
+            return report, trace
 
         for call in msg.tool_calls:
             name = call.function.name
