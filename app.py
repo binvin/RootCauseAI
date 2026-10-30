@@ -4,7 +4,7 @@ from rootcause.agent import mock_investigate, neb_investigate, redact_secrets
 st.set_page_config(page_title="RootCause AI",page_icon="🔎",layout="wide")
 st.title("🔎 RootCause AI")
 st.caption("Evidence-first troubleshooting agent • NVIDIA Nemotron via Nebius Token Factory")
-st.warning("Development prototype. Do not upload secrets or confidential customer logs. Investigation is read-only; conclusions require human validation.")
+#st.warning("Development prototype. Do not upload secrets or confidential customer logs. Investigation is read-only; conclusions require human validation.")
 mode=st.radio("Investigation mode",["Offline baseline (no AI)","Nebius Nemotron agent"],horizontal=True)
 upload=st.file_uploader("Upload a UTF-8 log file",type=["log","txt"])
 if upload:
