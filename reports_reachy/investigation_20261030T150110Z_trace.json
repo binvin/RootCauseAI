@@ -1,1 +1,62 @@
-
+[
+  {
+    "cycle": 1,
+    "tool": "extract_timeline",
+    "arguments": {},
+    "result": {
+      "events": [
+        {
+          "line": 1,
+          "text": "2026-10-29T10:00:00Z INFO Application startup complete",
+          "timestamp": "2026-10-29T10:00:00"
+        },
+        {
+          "line": 2,
+          "text": "2026-10-29T10:01:00Z ERROR Connection refused to database server",
+          "timestamp": "2026-10-29T10:01:00"
+        },
+        {
+          "line": 3,
+          "text": "2026-10-29T10:01:01Z WARN Database connection retry initiated",
+          "timestamp": "2026-10-29T10:01:01"
+        },
+        {
+          "line": 4,
+          "text": "2026-10-29T10:01:03Z ERROR Database connection retry failed",
+          "timestamp": "2026-10-29T10:01:03"
+        },
+        {
+          "line": 5,
+          "text": "2026-10-29T10:01:05Z ERROR HTTP 500 on /api/orders",
+          "timestamp": "2026-10-29T10:01:05"
+        },
+        {
+          "line": 6,
+          "text": "2026-10-29T10:01:06Z INFO Request processing terminated",
+          "timestamp": "2026-10-29T10:01:06"
+        },
+        {
+          "line": 7,
+          "text": "2026-10-29T10:05:00Z INFO Database connection restored",
+          "timestamp": "2026-10-29T10:05:00"
+        },
+        {
+          "line": 8,
+          "text": "2026-10-29T10:05:02Z INFO HTTP 200 on /api/orders",
+          "timestamp": "2026-10-29T10:05:02"
+        }
+      ],
+      "total": 8,
+      "note": "Source order, not clock-synchronized."
+    }
+  },
+  {
+    "cycle": 2,
+    "tool": "agent_complete",
+    "arguments": {},
+    "result": {
+      "reason": "Model chose to generate a final response",
+      "finish_reason": "stop"
+    }
+  }
+]
