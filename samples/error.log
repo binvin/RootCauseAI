@@ -1,0 +1,8 @@
+2026-10-29T10:00:00Z INFO Application startup complete
+2026-10-29T10:01:00Z ERROR Connection refused to database server
+2026-10-29T10:01:01Z WARN Database connection retry initiated
+2026-10-29T10:01:03Z ERROR Database connection retry failed
+2026-10-29T10:01:05Z ERROR HTTP 500 on /api/orders
+2026-10-29T10:01:06Z INFO Request processing terminated
+2026-10-29T10:05:00Z INFO Database connection restored
+2026-10-29T10:05:02Z INFO HTTP 200 on /api/orders
