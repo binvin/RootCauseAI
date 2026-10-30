@@ -13,6 +13,8 @@ The project also includes a Streamlit web application for interactive log analys
 **Live Streamlit application:** https://rootcause-ai-demo.streamlit.app/
 
 **Architecture:** 
+<img width="1672" height="941" alt="arch" src="https://github.com/user-attachments/assets/edf7310b-ff4a-4a0f-a2f4-3e04c4619ec2" />
+
 
 ## Inspiration
 
